@@ -1,0 +1,59 @@
+/* WordPress Twenty Twenty-Two 首页样式 */
+
+.home-page {
+    min-height: 60vh;
+}
+
+.home-page .container {
+    max-width: var(--max-width-medium);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-xl) 0;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.pagination button {
+    background: transparent;
+    border: 1px solid var(--color-text-primary);
+    color: var(--color-text-primary);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.pagination button:hover:not(:disabled) {
+    background: var(--color-text-primary);
+    color: var(--color-background);
+}
+
+.pagination button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--color-border);
+    color: var(--color-text-tertiary);
+}
+
+.page-info {
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+}
+
+@media (max-width: 768px) {
+    .pagination {
+        gap: var(--spacing-sm);
+    }
+
+    .pagination button {
+        padding: 0.5rem 1rem;
+        font-size: var(--font-size-sm);
+    }
+}

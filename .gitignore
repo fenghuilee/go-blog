@@ -1,0 +1,35 @@
+# 忽略编译输出
+go-blog
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试文件
+*.test
+*.out
+
+# Go 依赖
+/vendor/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 前端
+web/node_modules/
+web/dist/
+
+# 配置文件（如包含敏感信息）
+# configs/config.yaml
+
+# 日志
+*.log
+
+# 操作系统
+.DS_Store
+Thumbs.db

@@ -1,0 +1,280 @@
+/* WordPress Twenty Twenty-Two 全局样式 */
+
+/* ===== CSS 变量定义 ===== */
+:root {
+    /* 配色方案 - 经典黑白 */
+    --color-text-primary: #000000;
+    --color-text-secondary: #757575;
+    --color-text-tertiary: #999999;
+    --color-background: #FFFFFF;
+    --color-background-secondary: #F5F5F5;
+    --color-border: #DDDDDD;
+    --color-border-light: #ECECEC;
+    --color-input-border: #CCCCCC;
+
+    /* 间距系统 */
+    --spacing-xs: 0.5rem;
+    /* 8px */
+    --spacing-sm: 1rem;
+    /* 16px */
+    --spacing-md: 2rem;
+    /* 32px */
+    --spacing-lg: 3rem;
+    /* 48px */
+    --spacing-xl: 4rem;
+    /* 64px */
+    --spacing-2xl: 6rem;
+    /* 96px */
+
+    /* 排版 */
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-size-xs: 0.75rem;
+    /* 12px */
+    --font-size-sm: 0.875rem;
+    /* 14px */
+    --font-size-base: 1.125rem;
+    /* 18px */
+    --font-size-lg: 1.5rem;
+    /* 24px */
+    --font-size-xl: 2rem;
+    /* 32px */
+    --font-size-2xl: 3rem;
+    /* 48px */
+
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.7;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-black: 900;
+
+    /* 布局 */
+    --max-width-narrow: 650px;
+    --max-width-medium: 900px;
+    --max-width-wide: 1200px;
+
+    /* 其他 */
+    --border-radius: 0;
+    /* Twenty Twenty-Two 使用直角 */
+    --transition-speed: 0.2s;
+}
+
+/* ===== 全局重置和基础样式 ===== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
+}
+
+/* ===== 排版 ===== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: var(--font-weight-black);
+    margin-bottom: var(--spacing-md);
+}
+
+h2 {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    margin-bottom: var(--spacing-md);
+}
+
+h3 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-sm);
+}
+
+h4 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+p {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-text-primary);
+}
+
+a {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: opacity var(--transition-speed);
+}
+
+a:hover {
+    opacity: 0.7;
+}
+
+/* ===== 按钮样式 ===== */
+button,
+.button {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--color-text-primary);
+    background-color: var(--color-text-primary);
+    color: var(--color-background);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    border-radius: var(--border-radius);
+}
+
+button:hover:not(:disabled),
+.button:hover {
+    background-color: #333333;
+    border-color: #333333;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button.secondary,
+.button.secondary {
+    background-color: transparent;
+    color: var(--color-text-primary);
+}
+
+button.secondary:hover:not(:disabled),
+.button.secondary:hover {
+    background-color: var(--color-background-secondary);
+    border-color: var(--color-text-primary);
+}
+
+/* ===== 表单元素 ===== */
+input,
+textarea,
+select {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-input-border);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    border-radius: var(--border-radius);
+    transition: border-color var(--transition-speed);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border: 2px solid var(--color-text-primary);
+    padding: calc(0.75rem - 1px) calc(1rem - 1px);
+    /* 补偿边框增加的1px */
+}
+
+textarea {
+    resize: vertical;
+    font-family: var(--font-family);
+}
+
+/* ===== 工具类 ===== */
+.container {
+    width: 100%;
+    max-width: var(--max-width-wide);
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.container-narrow {
+    max-width: var(--max-width-narrow);
+}
+
+.container-medium {
+    max-width: var(--max-width-medium);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-sm {
+    margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+    margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+    margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+    margin-top: var(--spacing-xl);
+}
+
+.mb-sm {
+    margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+    margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+    margin-bottom: var(--spacing-lg);
+}
+
+.mb-xl {
+    margin-bottom: var(--spacing-xl);
+}
+
+.loading {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+    :root {
+        --spacing-md: 1.5rem;
+        --spacing-lg: 2rem;
+        --spacing-xl: 3rem;
+        --spacing-2xl: 4rem;
+    }
+
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    body {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,9 @@
+/* 引入 Twenty Twenty-Two 全局样式 */
+@import './styles/globals.css';
+
+/* 应用根元素样式 */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

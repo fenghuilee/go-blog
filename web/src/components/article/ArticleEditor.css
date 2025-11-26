@@ -1,0 +1,62 @@
+/* WordPress Twenty Twenty-Two Markdown 编辑器样式 */
+
+.markdown-editor-container {
+    margin-bottom: var(--spacing-md);
+}
+
+.markdown-editor-container .EasyMDEContainer {
+    border: 1px solid var(--color-input-border);
+    background: var(--color-background);
+}
+
+.markdown-editor-container .EasyMDEContainer:focus-within {
+    border: 2px solid var(--color-text-primary);
+}
+
+.markdown-editor-container .EasyMDEContainer .CodeMirror {
+    border: none;
+    font-size: var(--font-size-base);
+    font-family: 'Courier New', monospace;
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    min-height: 500px;
+    max-height: 800px;
+}
+
+.markdown-editor-container .EasyMDEContainer .CodeMirror-cursor {
+    border-left-color: var(--color-text-primary);
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-background-secondary);
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar button {
+    color: var(--color-text-primary);
+    border: none;
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar button:hover,
+.markdown-editor-container .EasyMDEContainer .editor-toolbar button.active {
+    background: var(--color-text-primary);
+    color: var(--color-background);
+    border-color: var(--color-text-primary);
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar i.separator {
+    border-left-color: var(--color-border);
+}
+
+.markdown-editor-container .EasyMDEContainer .CodeMirror-selected {
+    background: var(--color-background-secondary);
+}
+
+@media (max-width: 768px) {
+    .markdown-editor-container .EasyMDEContainer .CodeMirror {
+        min-height: 300px;
+    }
+}

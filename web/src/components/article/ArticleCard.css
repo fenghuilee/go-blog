@@ -1,0 +1,96 @@
+/* WordPress Twenty Twenty-Two 文章卡片样式 */
+
+.article-card {
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border-light);
+    padding: var(--spacing-xl) 0;
+    transition: opacity var(--transition-speed);
+}
+
+.article-card:hover {
+    opacity: 0.8;
+}
+
+.article-card:last-child {
+    border-bottom: none;
+}
+
+.article-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.article-title {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: var(--font-weight-black);
+    color: var(--color-text-primary);
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.02em;
+}
+
+.article-summary {
+    color: var(--color-text-secondary);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: var(--font-size-base);
+}
+
+.article-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.article-meta span {
+    display: inline-block;
+}
+
+.article-date {
+    font-weight: var(--font-weight-medium);
+}
+
+.article-categories {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+.article-views {
+    color: var(--color-text-tertiary);
+}
+
+.article-tags {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 0.25rem 0.75rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-speed);
+}
+
+.tag:hover {
+    background: var(--color-text-primary);
+    color: var(--color-background);
+    border-color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+    .article-card {
+        padding: var(--spacing-md) 0;
+    }
+
+    .article-meta {
+        gap: var(--spacing-sm);
+    }
+}

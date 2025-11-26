@@ -1,0 +1,20 @@
+/* WordPress Twenty Twenty-Two 文章列表样式 */
+
+.article-list {
+    max-width: var(--max-width-medium);
+    margin: 0 auto;
+}
+
+.article-list .loading {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+}
+
+.article-list .no-articles {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+}
