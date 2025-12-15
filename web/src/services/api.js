@@ -1,4 +1,5 @@
 import request from '../utils/request';
+import { fetchStream } from '../utils/sse';
 
 // 登录
 export const login = (username, password) => {
@@ -103,19 +104,36 @@ export const changePassword = (oldPassword, newPassword) => {
     });
 };
 
-// AI写作辅助
-export const generateArticle = (data) => {
-    return request.post('/ai/generate', data);
+// AI写作辅助 (流式)
+
+export const generateArticle = (data, onMessage, onError, onFinish, signal) => {
+    return fetchStream('/ai/generate', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        signal
+    }, onMessage, onError, onFinish);
 };
 
-export const continueWriting = (data) => {
-    return request.post('/ai/continue', data);
+export const continueWriting = (data, onMessage, onError, onFinish, signal) => {
+    return fetchStream('/ai/continue', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        signal
+    }, onMessage, onError, onFinish);
 };
 
-export const polishArticle = (data) => {
-    return request.post('/ai/polish', data);
+export const polishArticle = (data, onMessage, onError, onFinish, signal) => {
+    return fetchStream('/ai/polish', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        signal
+    }, onMessage, onError, onFinish);
 };
 
-export const expandOutline = (data) => {
-    return request.post('/ai/expand', data);
+export const expandOutline = (data, onMessage, onError, onFinish, signal) => {
+    return fetchStream('/ai/expand', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        signal
+    }, onMessage, onError, onFinish);
 };

@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getArticle, createArticle, updateArticle, getCategories, getTags, createCategory, createTag, generateArticle, continueWriting, polishArticle, expandOutline } from '../services/api';
 import ArticleEditor from '../components/article/ArticleEditor';
-import AIToolbar from '../components/article/AIToolbar';
+import AIFloatingMenu from '../components/article/AIFloatingMenu';
 import AIGenerateDialog from '../components/article/AIGenerateDialog';
+import AIStatusPanel from '../components/article/AIStatusPanel';
 import './ArticleEdit.css';
 
 function ArticleEdit() {
@@ -31,6 +32,17 @@ function ArticleEdit() {
     // AI相关状态
     const [aiLoading, setAILoading] = useState(false);
     const [showGenerateDialog, setShowGenerateDialog] = useState(false);
+    const [abortController, setAbortController] = useState(null);
+    const [aiTask, setAITask] = useState(null); // Tracks current AI operation (e.g., 'generate', 'continue', 'polish', 'expand')
+
+    const handleStopAI = () => {
+        if (abortController) {
+            abortController.abort();
+            setAbortController(null);
+            setAILoading(false);
+            setAITask(null);
+        }
+    };
 
     useEffect(() => {
         loadCategories();
@@ -191,18 +203,30 @@ function ArticleEdit() {
             alert('请先输入一些内容');
             return;
         }
+
+        const ac = new AbortController();
+        setAbortController(ac);
         setAILoading(true);
+        setAITask('continue');
+
+        const initialContent = content; // 保存初始内容
+        let newPart = '';
         try {
-            const result = await continueWriting({
-                existing_content: content.trim(),
+            await continueWriting({
+                existing_content: initialContent.trim(),
                 direction: ''
-            });
-            setContent(content + '\n\n' + result.content);
-            alert('续写成功！');
+            }, (delta) => {
+                newPart += delta;
+                setContent(initialContent + '\n\n' + newPart);
+            }, null, null, ac.signal);
         } catch (error) {
-            alert('AI续写失败：' + (error.response?.data?.error || error.message));
+            if (error.name !== 'AbortError') {
+                alert('AI续写失败：' + (error.message || '未知错误'));
+            }
         } finally {
             setAILoading(false);
+            setAbortController(null);
+            setAITask(null);
         }
     };
 
@@ -212,18 +236,29 @@ function ArticleEdit() {
             alert('请先输入文章内容');
             return;
         }
+
+        const ac = new AbortController();
+        setAbortController(ac);
         setAILoading(true);
+        setAITask('polish');
+
+        let generatedText = '';
         try {
-            const result = await polishArticle({
+            await polishArticle({
                 content: content.trim(),
                 style: 'professional'
-            });
-            setContent(result.content);
-            alert('润色成功！');
+            }, (delta) => {
+                generatedText += delta;
+                setContent(generatedText);
+            }, null, null, ac.signal);
         } catch (error) {
-            alert('AI润色失败：' + (error.response?.data?.error || error.message));
+            if (error.name !== 'AbortError') {
+                alert('AI润色失败：' + (error.message || '未知错误'));
+            }
         } finally {
             setAILoading(false);
+            setAbortController(null);
+            setAITask(null);
         }
     };
 
@@ -233,37 +268,58 @@ function ArticleEdit() {
             alert('请先输入大纲');
             return;
         }
+
+        const ac = new AbortController();
+        setAbortController(ac);
         setAILoading(true);
+        setAITask('expand');
+
+        let generatedText = '';
         try {
-            const result = await expandOutline({
+            await expandOutline({
                 outline: content.trim(),
                 word_count: 2000
-            });
-            setContent(result.content);
-            alert('大纲扩展成功！');
+            }, (delta) => {
+                generatedText += delta;
+                setContent(generatedText);
+            }, null, null, ac.signal);
         } catch (error) {
-            alert('AI扩展失败：' + (error.response?.data?.error || error.message));
+            if (error.name !== 'AbortError') {
+                alert('AI扩展失败：' + (error.message || '未知错误'));
+            }
         } finally {
             setAILoading(false);
+            setAbortController(null);
+            setAITask(null);
         }
     };
 
     const handleGenerateConfirm = async (params) => {
+        const ac = new AbortController();
+        setAbortController(ac);
+        setShowGenerateDialog(false); // 立即关闭对话框，避免遮挡
         setAILoading(true);
+        setAITask('generate');
+
+        let generatedText = '';
         try {
-            const result = await generateArticle({
+            await generateArticle({
                 title: title.trim(),
                 keywords: params.keywords,
                 outline: params.outline,
                 word_count: params.wordCount
-            });
-            setContent(result.content);
-            setShowGenerateDialog(false);
-            alert('文章生成成功！');
+            }, (delta) => {
+                generatedText += delta;
+                setContent(generatedText);
+            }, null, null, ac.signal);
         } catch (error) {
-            alert('AI生成失败：' + (error.response?.data?.error || error.message));
+            if (error.name !== 'AbortError') {
+                alert('AI生成失败：' + (error.message || '未知错误'));
+            }
         } finally {
             setAILoading(false);
+            setAbortController(null);
+            setAITask(null);
         }
     };
 
@@ -421,13 +477,7 @@ function ArticleEdit() {
 
                     <div className="form-group">
                         <label>内容 *</label>
-                        <AIToolbar
-                            onGenerate={handleAIGenerate}
-                            onContinue={handleAIContinue}
-                            onPolish={handleAIPolish}
-                            onExpand={handleAIExpand}
-                            loading={aiLoading}
-                        />
+
                         <ArticleEditor value={content} onChange={setContent} />
                     </div>
 
@@ -438,7 +488,7 @@ function ArticleEdit() {
                             取消
                         </button>
                         <button type="submit" disabled={loading}>
-                            {loading ? '保存中...' : '保存'}
+                            {loading ? '保存中...' : (isEdit ? '更新文章' : '发布文章')}
                         </button>
                     </div>
                 </form>
@@ -450,6 +500,15 @@ function ArticleEdit() {
                         onCancel={() => setShowGenerateDialog(false)}
                     />
                 )}
+
+                <AIFloatingMenu
+                    onGenerate={handleAIGenerate}
+                    onContinue={handleAIContinue}
+                    onPolish={handleAIPolish}
+                    onExpand={handleAIExpand}
+                    loading={aiLoading}
+                />
+                <AIStatusPanel loading={aiLoading} onStop={handleStopAI} aiTask={aiTask} />
             </div>
         </div>
     );

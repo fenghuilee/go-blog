@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -40,6 +41,7 @@ type QwenRequest struct {
 	Messages    []QwenMessage `json:"messages"`
 	MaxTokens   int           `json:"max_tokens,omitempty"`
 	Temperature float64       `json:"temperature,omitempty"`
+	Stream      bool          `json:"stream,omitempty"`
 }
 
 // QwenMessage 消息结构
@@ -56,11 +58,21 @@ type QwenResponse struct {
 			Role    string `json:"role"`
 			Content string `json:"content"`
 		} `json:"message"`
+		Delta struct {
+			Role    string `json:"role"`
+			Content string `json:"content"`
+		} `json:"delta"`
 		FinishReason string `json:"finish_reason"`
 	} `json:"choices"`
 	Usage struct {
 		TotalTokens int `json:"total_tokens"`
 	} `json:"usage"`
+}
+
+// StreamGenerateArticle 流式生成文章初稿
+func (s *QwenService) StreamGenerateArticle(req *GenerateArticleRequest, callback func(string) error) error {
+	prompt := s.buildGeneratePrompt(req)
+	return s.streamCallAPI(prompt, callback)
 }
 
 // GenerateArticle 生成文章初稿
@@ -69,16 +81,34 @@ func (s *QwenService) GenerateArticle(req *GenerateArticleRequest) (string, erro
 	return s.callAPI(prompt)
 }
 
+// StreamContinueWriting 流式续写内容
+func (s *QwenService) StreamContinueWriting(req *ContinueWritingRequest, callback func(string) error) error {
+	prompt := s.buildContinuePrompt(req)
+	return s.streamCallAPI(prompt, callback)
+}
+
 // ContinueWriting 续写内容
 func (s *QwenService) ContinueWriting(req *ContinueWritingRequest) (string, error) {
 	prompt := s.buildContinuePrompt(req)
 	return s.callAPI(prompt)
 }
 
+// StreamPolishArticle 流式润色文章
+func (s *QwenService) StreamPolishArticle(req *PolishArticleRequest, callback func(string) error) error {
+	prompt := s.buildPolishPrompt(req)
+	return s.streamCallAPI(prompt, callback)
+}
+
 // PolishArticle 润色文章
 func (s *QwenService) PolishArticle(req *PolishArticleRequest) (string, error) {
 	prompt := s.buildPolishPrompt(req)
 	return s.callAPI(prompt)
+}
+
+// StreamExpandOutline 流式扩展大纲
+func (s *QwenService) StreamExpandOutline(req *ExpandOutlineRequest, callback func(string) error) error {
+	prompt := s.buildExpandPrompt(req)
+	return s.streamCallAPI(prompt, callback)
 }
 
 // ExpandOutline 扩展大纲
@@ -255,4 +285,92 @@ func (s *QwenService) callAPI(prompt string) (string, error) {
 	}
 
 	return qwenResp.Choices[0].Message.Content, nil
+}
+
+// streamCallAPI 流式调用通义千问API
+func (s *QwenService) streamCallAPI(prompt string, callback func(string) error) error {
+	// 构建请求
+	reqBody := QwenRequest{
+		Model: s.model,
+		Messages: []QwenMessage{
+			{
+				Role:    "user",
+				Content: prompt,
+			},
+		},
+		MaxTokens:   s.maxTokens,
+		Temperature: s.temperature,
+		Stream:      true, // 开启流式模式
+	}
+
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return fmt.Errorf("序列化请求失败: %w", err)
+	}
+
+	// 创建HTTP请求
+	fullURL := s.apiURL + "/chat/completions"
+	httpReq, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return fmt.Errorf("创建请求失败: %w", err)
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+s.apiKey)
+	httpReq.Header.Set("Accept", "text/event-stream") // Accept stream
+
+	// 发送请求
+	resp, err := s.httpClient.Do(httpReq)
+	if err != nil {
+		return fmt.Errorf("API请求失败: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API返回错误: %s, 响应: %s", resp.Status, string(body))
+	}
+
+	// 读取流式响应
+	reader := bufio.NewReader(resp.Body)
+	for {
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("读取流数据失败: %w", err)
+		}
+
+		// 处理 SSE 数据行
+		lineStr := strings.TrimSpace(string(line))
+		if lineStr == "" {
+			continue
+		}
+
+		if !strings.HasPrefix(lineStr, "data: ") {
+			continue
+		}
+
+		data := strings.TrimPrefix(lineStr, "data: ")
+		if data == "[DONE]" {
+			break
+		}
+
+		var qwenResp QwenResponse
+		if err := json.Unmarshal([]byte(data), &qwenResp); err != nil {
+			continue // 忽略解析错误，可能是心跳或其他数据
+		}
+
+		if len(qwenResp.Choices) > 0 {
+			content := qwenResp.Choices[0].Delta.Content
+			if content != "" {
+				if err := callback(content); err != nil {
+					return err // 回调返回错误则停止流
+				}
+			}
+		}
+	}
+
+	return nil
 }

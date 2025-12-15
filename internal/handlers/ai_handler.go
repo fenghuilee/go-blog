@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"go-blog/internal/config"
@@ -37,18 +39,8 @@ func GenerateArticle(c *gin.Context) {
 		return
 	}
 
-	content, err := aiService.GenerateArticle(&req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "生成失败: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"content": content,
-		},
+	streamResponse(c, func(callback func(string) error) error {
+		return aiService.StreamGenerateArticle(&req, callback)
 	})
 }
 
@@ -65,18 +57,8 @@ func ContinueWriting(c *gin.Context) {
 		return
 	}
 
-	content, err := aiService.ContinueWriting(&req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "续写失败: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"content": content,
-		},
+	streamResponse(c, func(callback func(string) error) error {
+		return aiService.StreamContinueWriting(&req, callback)
 	})
 }
 
@@ -93,18 +75,8 @@ func PolishArticle(c *gin.Context) {
 		return
 	}
 
-	content, err := aiService.PolishArticle(&req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "润色失败: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"content": content,
-		},
+	streamResponse(c, func(callback func(string) error) error {
+		return aiService.StreamPolishArticle(&req, callback)
 	})
 }
 
@@ -121,17 +93,37 @@ func ExpandOutline(c *gin.Context) {
 		return
 	}
 
-	content, err := aiService.ExpandOutline(&req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "扩展失败: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "success",
-		"data": gin.H{
-			"content": content,
-		},
+	streamResponse(c, func(callback func(string) error) error {
+		return aiService.StreamExpandOutline(&req, callback)
 	})
+}
+
+// streamResponse 辅助函数：处理SSE流式响应
+func streamResponse(c *gin.Context, param func(func(string) error) error) {
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
+	c.Writer.Header().Set("Cache-Control", "no-cache")
+	c.Writer.Header().Set("Connection", "keep-alive")
+	c.Writer.Header().Set("Transfer-Encoding", "chunked")
+
+	err := param(func(content string) error {
+		data := gin.H{
+			"content": content,
+		}
+		jsonData, _ := json.Marshal(data)
+		fmt.Fprintf(c.Writer, "data: %s\n\n", jsonData)
+		c.Writer.Flush()
+		return nil
+	})
+
+	if err != nil {
+		// Log error
+		fmt.Printf("Stream error: %v\n", err)
+		// 发送错误事件
+		fmt.Fprintf(c.Writer, "event: error\ndata: {\"error\": \"%s\"}\n\n", err.Error())
+		c.Writer.Flush()
+	} else {
+		// 发送完成信号
+		fmt.Fprintf(c.Writer, "data: [DONE]\n\n")
+		c.Writer.Flush()
+	}
 }

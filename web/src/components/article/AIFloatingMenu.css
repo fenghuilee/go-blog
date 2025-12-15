@@ -1,0 +1,96 @@
+.ai-fab-container {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 990;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.ai-fab-main {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1890ff;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 16px rgba(24, 144, 255, 0.35);
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.ai-fab-main:hover {
+    transform: scale(1.1);
+    background: #40a9ff;
+    box-shadow: 0 6px 20px rgba(24, 144, 255, 0.45);
+}
+
+.ai-fab-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom right;
+}
+
+.ai-fab-container.open .ai-fab-menu {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.ai-fab-container.open .ai-fab-main {
+    transform: rotate(90deg);
+    background: #ff4d4f;
+    box-shadow: 0 4px 16px rgba(255, 77, 79, 0.35);
+}
+
+.ai-menu-item {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 10px 20px;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.ai-menu-item:hover {
+    background: #f0f7ff;
+    border-color: #1890ff;
+    color: #1890ff;
+    transform: translateX(-5px);
+    box-shadow: 0 6px 16px rgba(24, 144, 255, 0.15);
+}
+
+.ai-icon {
+    font-size: 1.2em;
+}
+
+/* 适配移动端 */
+@media (max-width: 768px) {
+    .ai-fab-container {
+        bottom: 20px;
+        right: 20px;
+    }
+}
