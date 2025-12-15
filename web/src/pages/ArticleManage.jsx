@@ -123,7 +123,7 @@ function ArticleManage() {
                                 {articles.map((article) => (
                                     <tr key={article.id}>
                                         <td className="title-cell">
-                                            <Link to={`/ article / ${article.id} `}>
+                                            <Link to={`/article/${article.id}`}>
                                                 {article.title}
                                             </Link>
                                         </td>
@@ -133,7 +133,7 @@ function ArticleManage() {
                                                 : '-'}
                                         </td>
                                         <td>
-                                            <span className={`status - badge ${article.status} `}>
+                                            <span className={`status-badge ${article.status}`}>
                                                 {article.status === 'published' ? '已发布' : '草稿'}
                                             </span>
                                         </td>
@@ -141,7 +141,7 @@ function ArticleManage() {
                                         <td>{formatDate(article.created_at)}</td>
                                         <td className="actions-cell">
                                             <button
-                                                onClick={() => navigate(`/ admin / edit / ${article.id} `)}
+                                                onClick={() => navigate(`/admin/edit/${article.id}`)}
                                                 className="edit-btn"
                                             >
                                                 编辑
