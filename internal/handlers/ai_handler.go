@@ -44,7 +44,11 @@ func GenerateArticle(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"content": content,
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"content": content,
+		},
 	})
 }
 
@@ -68,7 +72,11 @@ func ContinueWriting(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"content": content,
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"content": content,
+		},
 	})
 }
 
@@ -92,7 +100,11 @@ func PolishArticle(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"content": content,
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"content": content,
+		},
 	})
 }
 
@@ -116,6 +128,10 @@ func ExpandOutline(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"content": content,
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"content": content,
+		},
 	})
 }

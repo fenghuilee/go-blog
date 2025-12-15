@@ -1,27 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
-import { getSettings } from '../../services/api';
+import { useSettings } from '../../hooks';
 import './Header.css';
 
 function Header() {
     const { isLoggedIn, logout } = useAuth();
-    const [siteName, setSiteName] = useState('我的博客');
-
-    useEffect(() => {
-        // 获取站点名称
-        const loadSettings = async () => {
-            try {
-                const settings = await getSettings();
-                if (settings.site_name) {
-                    setSiteName(settings.site_name);
-                }
-            } catch (error) {
-                console.error('获取设置失败:', error);
-            }
-        };
-        loadSettings();
-    }, []);
+    const { getSetting, loading } = useSettings();
+    const siteName = getSetting('site_name', '');
 
     const handleLogout = () => {
         logout();
@@ -32,7 +17,7 @@ function Header() {
         <header className="header">
             <div className="container">
                 <Link to="/" className="logo">
-                    <h1>{siteName}</h1>
+                    <h1>{loading ? '' : siteName}</h1>
                 </Link>
                 <nav className="nav">
                     <Link to="/">首页</Link>
@@ -54,3 +39,4 @@ function Header() {
 }
 
 export default Header;
+

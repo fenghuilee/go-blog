@@ -1,27 +1,19 @@
-import { useState, useEffect } from 'react';
-import { getSettings } from '../../services/api';
+import { useSettings } from '../../hooks';
 import './Footer.css';
 
 function Footer() {
-    const [siteName, setSiteName] = useState('我的博客');
-    const [icpBeian, setIcpBeian] = useState('');
+    const { getSetting, loading } = useSettings();
+    const siteName = getSetting('site_name', '');
+    const icpBeian = getSetting('icp_beian', '');
 
-    useEffect(() => {
-        const loadSettings = async () => {
-            try {
-                const settings = await getSettings();
-                if (settings.site_name) {
-                    setSiteName(settings.site_name);
-                }
-                if (settings.icp_beian) {
-                    setIcpBeian(settings.icp_beian);
-                }
-            } catch (error) {
-                console.error('获取Footer设置失败:', error);
-            }
-        };
-        loadSettings();
-    }, []);
+    // 加载中不显示内容
+    if (loading) {
+        return (
+            <footer className="footer">
+                <p>&nbsp;</p>
+            </footer>
+        );
+    }
 
     return (
         <footer className="footer">
@@ -45,3 +37,4 @@ function Footer() {
 }
 
 export default Footer;
+

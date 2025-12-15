@@ -1,9 +1,10 @@
 import ArticleCard from './ArticleCard';
+import { ArticleListSkeleton } from '../common/Skeleton';
 import './ArticleList.css';
 
 function ArticleList({ articles, loading }) {
     if (loading) {
-        return <div className="loading">加载中...</div>;
+        return <ArticleListSkeleton count={3} />;
     }
 
     if (!articles || articles.length === 0) {
@@ -20,3 +21,4 @@ function ArticleList({ articles, loading }) {
 }
 
 export default ArticleList;
+

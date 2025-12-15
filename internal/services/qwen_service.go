@@ -218,7 +218,8 @@ func (s *QwenService) callAPI(prompt string) (string, error) {
 	}
 
 	// 创建HTTP请求
-	httpReq, err := http.NewRequest("POST", s.apiURL, bytes.NewBuffer(jsonData))
+	fullURL := s.apiURL + "/chat/completions"
+	httpReq, err := http.NewRequest("POST", fullURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", fmt.Errorf("创建请求失败: %w", err)
 	}

@@ -431,13 +431,7 @@ function ArticleEdit() {
                         <ArticleEditor value={content} onChange={setContent} />
                     </div>
 
-                    {showGenerateDialog && (
-                        <AIGenerateDialog
-                            title={title}
-                            onConfirm={handleGenerateConfirm}
-                            onCancel={() => setShowGenerateDialog(false)}
-                        />
-                    )}
+
 
                     <div className="form-actions">
                         <button type="button" onClick={() => navigate(-1)} className="cancel-btn">
@@ -448,6 +442,14 @@ function ArticleEdit() {
                         </button>
                     </div>
                 </form>
+
+                {showGenerateDialog && (
+                    <AIGenerateDialog
+                        title={title}
+                        onConfirm={handleGenerateConfirm}
+                        onCancel={() => setShowGenerateDialog(false)}
+                    />
+                )}
             </div>
         </div>
     );

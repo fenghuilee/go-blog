@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getSettings, updateSettings, changePassword } from '../services/api';
+import { SettingsSkeleton } from '../components/common/Skeleton';
 import './Settings.css';
 
 function Settings() {
@@ -117,7 +118,14 @@ function Settings() {
     };
 
     if (loading) {
-        return <div className="loading">加载中...</div>;
+        return (
+            <div className="settings-page">
+                <div className="container">
+                    <h2>系统设置</h2>
+                    <SettingsSkeleton />
+                </div>
+            </div>
+        );
     }
 
     return (

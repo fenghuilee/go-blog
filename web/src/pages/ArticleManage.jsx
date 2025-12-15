@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getArticles, deleteArticle } from '../services/api';
+import { TableSkeleton } from '../components/common/Skeleton';
 import './ArticleManage.css';
 
 function ArticleManage() {
@@ -58,7 +59,16 @@ function ArticleManage() {
     };
 
     if (loading) {
-        return <div className="loading">加载中...</div>;
+        return (
+            <div className="article-manage-page">
+                <div className="container">
+                    <div className="page-header">
+                        <h2>文章管理</h2>
+                    </div>
+                    <TableSkeleton rows={5} cols={6} />
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -113,7 +123,7 @@ function ArticleManage() {
                                 {articles.map((article) => (
                                     <tr key={article.id}>
                                         <td className="title-cell">
-                                            <Link to={`/article/${article.id}`}>
+                                            <Link to={`/ article / ${article.id} `}>
                                                 {article.title}
                                             </Link>
                                         </td>
@@ -123,7 +133,7 @@ function ArticleManage() {
                                                 : '-'}
                                         </td>
                                         <td>
-                                            <span className={`status-badge ${article.status}`}>
+                                            <span className={`status - badge ${article.status} `}>
                                                 {article.status === 'published' ? '已发布' : '草稿'}
                                             </span>
                                         </td>
@@ -131,7 +141,7 @@ function ArticleManage() {
                                         <td>{formatDate(article.created_at)}</td>
                                         <td className="actions-cell">
                                             <button
-                                                onClick={() => navigate(`/admin/edit/${article.id}`)}
+                                                onClick={() => navigate(`/ admin / edit / ${article.id} `)}
                                                 className="edit-btn"
                                             >
                                                 编辑

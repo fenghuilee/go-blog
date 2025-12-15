@@ -9,6 +9,7 @@ import (
 	"go-blog/internal/handlers"
 	"go-blog/internal/router"
 	"go-blog/pkg/utils"
+	"go-blog/web"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,8 +45,8 @@ func main() {
 	// 初始化AI服务
 	handlers.InitAIService()
 
-	// 设置路由（开发模式前后端分离）
-	r := router.SetupRouter()
+	// 设置路由，传入 SPA handler（嵌入的前端静态文件）
+	r := router.SetupRouter(web.ServeSPA())
 
 	// 启动服务器
 	addr := fmt.Sprintf(":%d", config.AppConfig.Server.Port)

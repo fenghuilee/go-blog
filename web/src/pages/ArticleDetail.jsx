@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getArticle, getComments, deleteComment, getSettings } from '../services/api';
+import { getArticle, getComments, deleteComment } from '../services/api';
 import { isAuthor } from '../utils/auth';
+import { useSettings } from '../hooks';
 import MarkdownRender from '../components/markdown/MarkdownRender';
 import CommentList from '../components/comment/CommentList';
 import CommentForm from '../components/comment/CommentForm';
+import { ArticleDetailSkeleton } from '../components/common/Skeleton';
 import './ArticleDetail.css';
 
 function ArticleDetail() {
@@ -13,26 +15,20 @@ function ArticleDetail() {
     const [article, setArticle] = useState(null);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [enableComments, setEnableComments] = useState(true);
     const author = isAuthor();
 
+    // 使用useSettings Hook获取评论设置
+    const { getBoolSetting } = useSettings();
+    const enableComments = getBoolSetting('enable_comments', true);
+
     useEffect(() => {
-        loadSettings();
         loadArticle();
         loadComments();
     }, [id]);
 
-    const loadSettings = async () => {
-        try {
-            const settings = await getSettings();
-            setEnableComments(settings.enable_comments === 'true');
-        } catch (error) {
-            console.error('获取设置失败:', error);
-        }
-    };
-
     const loadArticle = async () => {
         try {
+            setLoading(true);
             const data = await getArticle(id);
             setArticle(data);
         } catch (error) {
@@ -68,8 +64,15 @@ function ArticleDetail() {
         return new Date(dateString).toLocaleString('zh-CN');
     };
 
+    // 加载时显示骨架屏
     if (loading) {
-        return <div className="loading">加载中...</div>;
+        return (
+            <div className="article-detail-page">
+                <div className="container">
+                    <ArticleDetailSkeleton />
+                </div>
+            </div>
+        );
     }
 
     if (!article) {

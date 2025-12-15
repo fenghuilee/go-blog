@@ -1,5 +1,6 @@
 /* WordPress Twenty Twenty-Two 布局样式 */
 
+/* ===== 基础布局 ===== */
 .app-layout {
     display: flex;
     flex-direction: column;
@@ -12,8 +13,113 @@
     background: var(--color-background);
 }
 
+/* ===== 布局变体 ===== */
+
+/* 居中布局 - 用于登录页等 */
+.layout-centered .main-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg) 0;
+}
+
+/* 宽屏布局 - 用于编辑页 */
+.layout-wide .main-content {
+    max-width: none;
+}
+
+.layout-wide .main-content .container {
+    max-width: var(--max-width-wide);
+}
+
+/* 后台管理布局 */
+.layout-admin {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.layout-admin .header {
+    width: 100%;
+}
+
+.layout-admin .main-content {
+    flex: 1;
+    padding: var(--spacing-lg);
+}
+
+.layout-admin .footer {
+    width: 100%;
+}
+
+/* 窄布局 - 用于文章阅读 */
+.layout-narrow .main-content .container {
+    max-width: var(--max-width-narrow);
+}
+
+/* ===== 内容区域样式 ===== */
+.content-wrapper {
+    width: 100%;
+    max-width: var(--max-width-wide);
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* ===== 粘性Footer ===== */
+.app-layout .footer {
+    margin-top: auto;
+}
+
+/* ===== 面包屑区域 ===== */
+.breadcrumb-area {
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border-light);
+    margin-bottom: var(--spacing-md);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    color: var(--color-text-primary);
+}
+
+.breadcrumb-separator {
+    color: var(--color-text-tertiary);
+}
+
+/* ===== 页面过渡动画 ===== */
+.page-enter {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.page-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ===== 响应式 ===== */
 @media (max-width: 768px) {
     .main-content {
+        padding: var(--spacing-md) 0;
+    }
+
+    .layout-admin {
+        flex-direction: column;
+    }
+
+    .layout-centered .main-content {
         padding: var(--spacing-md) 0;
     }
 }
