@@ -1,0 +1,20 @@
+# Apache 配置 - SPA 路由支持
+# 如果主机支持 Apache 和 .htaccess，可以使用此配置
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # 如果是 API 请求，不处理
+    RewriteCond %{REQUEST_URI} ^/api
+    RewriteRule ^api - [L]
+    
+    # 如果是静态资源文件（存在），直接返回
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+    
+    # 其他所有请求都转发到 index.html
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# 如果主机不支持 mod_rewrite，可以尝试使用 FallbackResource
+# FallbackResource /index.html

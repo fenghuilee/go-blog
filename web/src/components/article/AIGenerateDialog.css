@@ -1,0 +1,155 @@
+/* WordPress Twenty Twenty-Two AI对话框样式 */
+
+.ai-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.ai-dialog {
+    background: var(--color-background);
+    border: 2px solid var(--color-text-primary);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.ai-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.ai-dialog-header h3 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-black);
+    color: var(--color-text-primary);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 0;
+    transition: color var(--transition-speed);
+}
+
+.close-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.ai-dialog-body {
+    padding: var(--spacing-lg);
+}
+
+.form-field {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.field-hint {
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--color-input-border);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    transition: border-color var(--transition-speed);
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    outline: none;
+    border: 2px solid var(--color-text-primary);
+    padding: calc(0.875rem - 1px) calc(1rem - 1px);
+}
+
+.form-field textarea {
+    resize: vertical;
+}
+
+.title-display {
+    background: var(--color-background-secondary);
+    cursor: not-allowed;
+}
+
+.ai-dialog-footer {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.ai-dialog-footer button {
+    padding: 0.875rem 2rem;
+    border: 2px solid var(--color-text-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.cancel-btn {
+    background: transparent;
+    color: var(--color-text-primary);
+}
+
+.cancel-btn:hover {
+    background: var(--color-background-secondary);
+}
+
+.confirm-btn {
+    background: var(--color-text-primary);
+    color: var(--color-background);
+}
+
+.confirm-btn:hover {
+    background: #333;
+    border-color: #333;
+}
+
+@media (max-width: 768px) {
+    .ai-dialog {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .ai-dialog-footer {
+        flex-direction: column-reverse;
+    }
+
+    .ai-dialog-footer button {
+        width: 100%;
+    }
+}

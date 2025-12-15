@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getArticle, createArticle, updateArticle, getCategories, getTags, createCategory, createTag } from '../services/api';
+import { getArticle, createArticle, updateArticle, getCategories, getTags, createCategory, createTag, generateArticle, continueWriting, polishArticle, expandOutline } from '../services/api';
 import ArticleEditor from '../components/article/ArticleEditor';
+import AIToolbar from '../components/article/AIToolbar';
+import AIGenerateDialog from '../components/article/AIGenerateDialog';
 import './ArticleEdit.css';
 
 function ArticleEdit() {
@@ -25,6 +27,10 @@ function ArticleEdit() {
     const [newTagName, setNewTagName] = useState('');
     const [addingCategory, setAddingCategory] = useState(false);
     const [addingTag, setAddingTag] = useState(false);
+
+    // AI相关状态
+    const [aiLoading, setAILoading] = useState(false);
+    const [showGenerateDialog, setShowGenerateDialog] = useState(false);
 
     useEffect(() => {
         loadCategories();
@@ -167,6 +173,97 @@ function ArticleEdit() {
             alert('保存失败：' + error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // AI生成文章
+    const handleAIGenerate = () => {
+        if (!title.trim()) {
+            alert('请先输入文章标题');
+            return;
+        }
+        setShowGenerateDialog(true);
+    };
+
+    // AI续写
+    const handleAIContinue = async () => {
+        if (!content.trim()) {
+            alert('请先输入一些内容');
+            return;
+        }
+        setAILoading(true);
+        try {
+            const result = await continueWriting({
+                existing_content: content.trim(),
+                direction: ''
+            });
+            setContent(content + '\n\n' + result.content);
+            alert('续写成功！');
+        } catch (error) {
+            alert('AI续写失败：' + (error.response?.data?.error || error.message));
+        } finally {
+            setAILoading(false);
+        }
+    };
+
+    // AI润色
+    const handleAIPolish = async () => {
+        if (!content.trim()) {
+            alert('请先输入文章内容');
+            return;
+        }
+        setAILoading(true);
+        try {
+            const result = await polishArticle({
+                content: content.trim(),
+                style: 'professional'
+            });
+            setContent(result.content);
+            alert('润色成功！');
+        } catch (error) {
+            alert('AI润色失败：' + (error.response?.data?.error || error.message));
+        } finally {
+            setAILoading(false);
+        }
+    };
+
+    // AI扩展大纲
+    const handleAIExpand = async () => {
+        if (!content.trim()) {
+            alert('请先输入大纲');
+            return;
+        }
+        setAILoading(true);
+        try {
+            const result = await expandOutline({
+                outline: content.trim(),
+                word_count: 2000
+            });
+            setContent(result.content);
+            alert('大纲扩展成功！');
+        } catch (error) {
+            alert('AI扩展失败：' + (error.response?.data?.error || error.message));
+        } finally {
+            setAILoading(false);
+        }
+    };
+
+    const handleGenerateConfirm = async (params) => {
+        setAILoading(true);
+        try {
+            const result = await generateArticle({
+                title: title.trim(),
+                keywords: params.keywords,
+                outline: params.outline,
+                word_count: params.wordCount
+            });
+            setContent(result.content);
+            setShowGenerateDialog(false);
+            alert('文章生成成功！');
+        } catch (error) {
+            alert('AI生成失败：' + (error.response?.data?.error || error.message));
+        } finally {
+            setAILoading(false);
         }
     };
 
@@ -324,8 +421,23 @@ function ArticleEdit() {
 
                     <div className="form-group">
                         <label>内容 *</label>
+                        <AIToolbar
+                            onGenerate={handleAIGenerate}
+                            onContinue={handleAIContinue}
+                            onPolish={handleAIPolish}
+                            onExpand={handleAIExpand}
+                            loading={aiLoading}
+                        />
                         <ArticleEditor value={content} onChange={setContent} />
                     </div>
+
+                    {showGenerateDialog && (
+                        <AIGenerateDialog
+                            title={title}
+                            onConfirm={handleGenerateConfirm}
+                            onCancel={() => setShowGenerateDialog(false)}
+                        />
+                    )}
 
                     <div className="form-actions">
                         <button type="button" onClick={() => navigate(-1)} className="cancel-btn">

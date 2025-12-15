@@ -12,6 +12,7 @@ type Config struct {
 	Database DatabaseConfig `mapstructure:"database"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
 	CORS     CORSConfig     `mapstructure:"cors"`
+	AI       AIConfig       `mapstructure:"ai"`
 }
 
 type ServerConfig struct {
@@ -43,12 +44,28 @@ type CORSConfig struct {
 	AllowHeaders []string `mapstructure:"allow_headers"`
 }
 
+type AIConfig struct {
+	Provider string     `mapstructure:"provider"`
+	Qwen     QwenConfig `mapstructure:"qwen"`
+}
+
+type QwenConfig struct {
+	APIKey      string  `mapstructure:"api_key"`
+	APIURL      string  `mapstructure:"api_url"`
+	Model       string  `mapstructure:"model"`
+	MaxTokens   int     `mapstructure:"max_tokens"`
+	Temperature float64 `mapstructure:"temperature"`
+}
+
 var AppConfig *Config
 
 // LoadConfig 加载配置文件
 func LoadConfig(configPath string) error {
 	viper.SetConfigFile(configPath)
 	viper.SetConfigType("yaml")
+
+	// 支持环境变量替换
+	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		return fmt.Errorf("读取配置文件失败: %w", err)

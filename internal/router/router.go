@@ -66,6 +66,12 @@ func SetupRouter(spaHandler ...gin.HandlerFunc) *gin.Engine {
 
 			// 用户管理
 			auth.POST("/user/password", handlers.ChangePassword)
+
+			// AI写作辅助
+			auth.POST("/ai/generate", handlers.GenerateArticle)
+			auth.POST("/ai/continue", handlers.ContinueWriting)
+			auth.POST("/ai/polish", handlers.PolishArticle)
+			auth.POST("/ai/expand", handlers.ExpandOutline)
 		}
 	}
 

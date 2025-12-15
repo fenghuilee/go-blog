@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// 从环境变量获取 API base URL，如果没有设置则使用默认值 '/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
 const request = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE_URL,
     timeout: 10000,
 });
 

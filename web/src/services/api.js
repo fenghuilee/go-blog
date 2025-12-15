@@ -102,3 +102,20 @@ export const changePassword = (oldPassword, newPassword) => {
         new_password: newPassword
     });
 };
+
+// AI写作辅助
+export const generateArticle = (data) => {
+    return request.post('/ai/generate', data);
+};
+
+export const continueWriting = (data) => {
+    return request.post('/ai/continue', data);
+};
+
+export const polishArticle = (data) => {
+    return request.post('/ai/polish', data);
+};
+
+export const expandOutline = (data) => {
+    return request.post('/ai/expand', data);
+};
