@@ -2,11 +2,16 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { searchArticles } from '../services/api';
 import ArticleList from '../components/article/ArticleList';
+import { useToast } from '../utils/ToastContext';
+import { useConfirm } from '../utils/ConfirmContext';
+import SEO from '../components/common/SEO';
 import './Search.css';
 
 function Search() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const toast = useToast();
+    const confirm = useConfirm();
     const [keyword, setKeyword] = useState(searchParams.get('q') || '');
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -45,7 +50,7 @@ function Search() {
             saveToHistory(searchKeyword.trim());
         } catch (error) {
             console.error('搜索失败:', error);
-            alert('搜索失败：' + error.message);
+            toast.error('搜索失败：' + error.message);
         } finally {
             setLoading(false);
         }
@@ -67,7 +72,7 @@ function Search() {
         e.preventDefault();
 
         if (!keyword.trim()) {
-            alert('请输入搜索关键词');
+            toast.warning('请输入搜索关键词');
             return;
         }
 
@@ -90,8 +95,12 @@ function Search() {
         performSearch(term);
     };
 
-    const clearHistory = () => {
-        if (window.confirm('确定要清空搜索历史吗？')) {
+    const clearHistory = async () => {
+        if (await confirm('确定要清空搜索历史吗？', {
+            title: '清空历史',
+            type: 'warning',
+            confirmText: '清空'
+        })) {
             localStorage.removeItem('searchHistory');
             setSearchHistory([]);
         }
@@ -99,6 +108,7 @@ function Search() {
 
     return (
         <div className="search-page">
+            <SEO title={keyword ? `搜索: ${keyword}` : '搜索文章'} />
             <div className="container">
                 <div className="search-box">
                     <h2>搜索文章</h2>

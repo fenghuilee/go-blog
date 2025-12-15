@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getSettings, updateSettings, changePassword } from '../services/api';
 import { SettingsSkeleton } from '../components/common/Skeleton';
+import { useToast } from '../utils/ToastContext';
+import { useConfirm } from '../utils/ConfirmContext';
+import SEO from '../components/common/SEO';
 import './Settings.css';
 
 function Settings() {
+    const toast = useToast();
+    const confirm = useConfirm();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -41,7 +46,7 @@ function Settings() {
             setIcpBeian(data.icp_beian || '');
         } catch (error) {
             console.error('加载设置失败:', error);
-            alert('加载设置失败：' + error.message);
+            toast.error('加载设置失败：' + error.message);
         } finally {
             setLoading(false);
         }
@@ -51,7 +56,7 @@ function Settings() {
         e.preventDefault();
 
         if (!siteName.trim()) {
-            alert('站点名称不能为空');
+            toast.warning('站点名称不能为空');
             return;
         }
 
@@ -69,10 +74,10 @@ function Settings() {
             };
 
             await updateSettings(settings);
-            alert('设置保存成功');
+            toast.success('设置保存成功');
         } catch (error) {
             console.error('保存设置失败:', error);
-            alert('保存设置失败：' + error.message);
+            toast.error('保存设置失败：' + error.message);
         } finally {
             setSaving(false);
         }
@@ -82,37 +87,41 @@ function Settings() {
         e.preventDefault();
 
         if (!oldPassword || !newPassword || !confirmPassword) {
-            alert('请填写所有密码字段');
+            toast.warning('请填写所有密码字段');
             return;
         }
 
         if (newPassword.length < 6) {
-            alert('新密码长度至少为6个字符');
+            toast.warning('新密码长度至少为6个字符');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            alert('两次输入的新密码不一致');
+            toast.warning('两次输入的新密码不一致');
             return;
         }
 
         setChangingPassword(true);
         try {
             await changePassword(oldPassword, newPassword);
-            alert('密码修改成功');
+            toast.success('密码修改成功');
             setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
         } catch (error) {
             console.error('修改密码失败:', error);
-            alert('修改密码失败：' + error.message);
+            toast.error('修改密码失败：' + error.message);
         } finally {
             setChangingPassword(false);
         }
     };
 
-    const handleReset = () => {
-        if (window.confirm('确定要重置所有设置吗？')) {
+    const handleReset = async () => {
+        if (await confirm('确定要重置所有设置吗？', {
+            title: '重置设置',
+            type: 'warning',
+            confirmText: '重置'
+        })) {
             loadSettings();
         }
     };
@@ -130,6 +139,7 @@ function Settings() {
 
     return (
         <div className="settings-page">
+            <SEO title="系统设置" />
             <div className="container">
                 <h2>系统设置</h2>
 

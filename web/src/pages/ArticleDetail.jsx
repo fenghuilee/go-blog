@@ -7,11 +7,16 @@ import MarkdownRender from '../components/markdown/MarkdownRender';
 import CommentList from '../components/comment/CommentList';
 import CommentForm from '../components/comment/CommentForm';
 import { ArticleDetailSkeleton } from '../components/common/Skeleton';
+import { useToast } from '../utils/ToastContext';
+import { useConfirm } from '../utils/ConfirmContext';
+import SEO from '../components/common/SEO';
 import './ArticleDetail.css';
 
 function ArticleDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
+    const confirm = useConfirm();
     const [article, setArticle] = useState(null);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -33,7 +38,7 @@ function ArticleDetail() {
             setArticle(data);
         } catch (error) {
             console.error('加载文章失败:', error);
-            alert('文章不存在');
+            toast.error('文章不存在');
             navigate('/');
         } finally {
             setLoading(false);
@@ -50,13 +55,17 @@ function ArticleDetail() {
     };
 
     const handleDeleteComment = async (commentId) => {
-        if (!window.confirm('确定要删除这条评论吗？')) return;
+        if (!await confirm('确定要删除这条评论吗？', {
+            title: '删除评论',
+            type: 'danger',
+            confirmText: '删除'
+        })) return;
 
         try {
             await deleteComment(commentId);
             loadComments();
         } catch (error) {
-            alert('删除失败：' + error.message);
+            toast.error('删除失败：' + error.message);
         }
     };
 
@@ -81,6 +90,7 @@ function ArticleDetail() {
 
     return (
         <div className="article-detail-page">
+            <SEO title={article.title} description={article.summary} />
             <div className="container">
                 <article className="article-content">
                     <h1 className="article-title">{article.title}</h1>

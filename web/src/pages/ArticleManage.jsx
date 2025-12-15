@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getArticles, deleteArticle } from '../services/api';
 import { TableSkeleton } from '../components/common/Skeleton';
+import { useToast } from '../utils/ToastContext';
+import { useConfirm } from '../utils/ConfirmContext';
+import SEO from '../components/common/SEO';
 import './ArticleManage.css';
 
 function ArticleManage() {
     const navigate = useNavigate();
+    const toast = useToast();
+    const confirm = useConfirm();
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // all, published, draft
@@ -34,23 +39,27 @@ function ArticleManage() {
             setArticles(data.list || []);
         } catch (error) {
             console.error('加载文章失败:', error);
-            alert('加载文章失败：' + error.message);
+            toast.error('加载文章失败：' + error.message);
         } finally {
             setLoading(false);
         }
     };
 
     const handleDelete = async (id, title) => {
-        if (!window.confirm(`确定要删除文章"${title}"吗？`)) {
+        if (!await confirm(`确定要删除文章"${title}"吗？`, {
+            title: '删除文章',
+            type: 'danger',
+            confirmText: '删除'
+        })) {
             return;
         }
 
         try {
             await deleteArticle(id);
-            alert('删除成功');
+            toast.success('删除成功');
             loadArticles();
         } catch (error) {
-            alert('删除失败：' + error.message);
+            toast.error('删除失败：' + error.message);
         }
     };
 
@@ -73,6 +82,7 @@ function ArticleManage() {
 
     return (
         <div className="article-manage-page">
+            <SEO title="文章管理" />
             <div className="container">
                 <div className="page-header">
                     <h2>文章管理</h2>

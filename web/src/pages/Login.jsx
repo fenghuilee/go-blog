@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { login as apiLogin } from '../services/api';
 import { setAuth } from '../utils/auth';
 import { useAuth } from '../utils/AuthContext';
+import { useToast } from '../utils/ToastContext';
+import SEO from '../components/common/SEO';
 import './Login.css';
 
 function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
+    const toast = useToast();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -16,7 +19,7 @@ function Login() {
         e.preventDefault();
 
         if (!username || !password) {
-            alert('请输入用户名和密码');
+            toast.warning('请输入用户名和密码');
             return;
         }
 
@@ -27,12 +30,12 @@ function Login() {
             setAuth(data.token, data.user);
             // 更新全局 Context 状态
             login(data.user);
-            alert('登录成功');
+            toast.success('登录成功');
             // 使用 navigate 进行 SPA 路由跳转
             navigate('/');
         } catch (error) {
             console.error('Login error:', error);
-            alert('登录失败：' + error.message);
+            toast.error('登录失败：' + error.message);
         } finally {
             setLoading(false);
         }
@@ -40,6 +43,7 @@ function Login() {
 
     return (
         <div className="login-page">
+            <SEO title="登录" />
             <div className="login-container">
                 <h2>登录</h2>
                 <form onSubmit={handleSubmit}>

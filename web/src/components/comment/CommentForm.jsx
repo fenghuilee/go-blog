@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useToast } from '../../utils/ToastContext';
 import './CommentForm.css';
 
 function CommentForm({ articleId, onCommentAdded }) {
+    const toast = useToast();
     const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [content, setContent] = useState('');
@@ -11,7 +13,7 @@ function CommentForm({ articleId, onCommentAdded }) {
         e.preventDefault();
 
         if (!nickname.trim() || !content.trim()) {
-            alert('请填写昵称和评论内容');
+            toast.warning('请填写昵称和评论内容');
             return;
         }
 
@@ -33,7 +35,7 @@ function CommentForm({ articleId, onCommentAdded }) {
                 onCommentAdded();
             }
         } catch (error) {
-            alert('发表评论失败：' + error.message);
+            toast.error('发表评论失败：' + error.message);
         } finally {
             setSubmitting(false);
         }

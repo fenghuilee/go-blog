@@ -5,12 +5,15 @@ import ArticleEditor from '../components/article/ArticleEditor';
 import AIFloatingMenu from '../components/article/AIFloatingMenu';
 import AIGenerateDialog from '../components/article/AIGenerateDialog';
 import AIStatusPanel from '../components/article/AIStatusPanel';
+import { useToast } from '../utils/ToastContext';
+import SEO from '../components/common/SEO';
 import './ArticleEdit.css';
 
 function ArticleEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEdit = !!id;
+    const toast = useToast();
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
@@ -62,7 +65,7 @@ function ArticleEdit() {
             setTagIds(data.tags ? data.tags.map(t => t.id) : []);
             setStatus(data.status);
         } catch (error) {
-            alert('加载文章失败：' + error.message);
+            toast.error('加载文章失败：' + error.message);
             navigate('/');
         }
     };
@@ -105,7 +108,7 @@ function ArticleEdit() {
     const handleCreateCategory = async () => {
         console.log('创建分类按钮被点击');
         if (!newCategoryName.trim()) {
-            alert('请输入分类名称');
+            toast.warning('请输入分类名称');
             return;
         }
 
@@ -117,10 +120,10 @@ function ArticleEdit() {
             setCategories([...categories, newCategory]);
             setCategoryIds([...categoryIds, newCategory.id]);  // 添加到多选列表
             setNewCategoryName('');
-            alert('分类创建成功');
+            toast.success('分类创建成功');
         } catch (error) {
             console.error('创建分类失败:', error);
-            alert('创建分类失败：' + error.message);
+            toast.error('创建分类失败：' + error.message);
         } finally {
             setAddingCategory(false);
         }
@@ -130,7 +133,7 @@ function ArticleEdit() {
     const handleCreateTag = async () => {
         console.log('创建标签按钮被点击');
         if (!newTagName.trim()) {
-            alert('请输入标签名称');
+            toast.warning('请输入标签名称');
             return;
         }
 
@@ -142,10 +145,10 @@ function ArticleEdit() {
             setTags([...tags, newTag]);
             setTagIds([...tagIds, newTag.id]);
             setNewTagName('');
-            alert('标签创建成功');
+            toast.success('标签创建成功');
         } catch (error) {
             console.error('创建标签失败:', error);
-            alert('创建标签失败：' + error.message);
+            toast.error('创建标签失败：' + error.message);
         } finally {
             setAddingTag(false);
         }
@@ -155,7 +158,7 @@ function ArticleEdit() {
         e.preventDefault();
 
         if (!title.trim() || !content.trim()) {
-            alert('请填写标题和内容');
+            toast.warning('请填写标题和内容');
             return;
         }
 
@@ -172,17 +175,17 @@ function ArticleEdit() {
 
             if (isEdit) {
                 await updateArticle(id, data);
-                alert('文章更新成功');
+                toast.success('文章更新成功');
             } else {
                 const result = await createArticle(data);
-                alert('文章创建成功');
+                toast.success('文章创建成功');
                 navigate(`/article/${result.id}`);
                 return;
             }
 
             navigate(`/article/${id}`);
         } catch (error) {
-            alert('保存失败：' + error.message);
+            toast.error('保存失败：' + error.message);
         } finally {
             setLoading(false);
         }
@@ -191,7 +194,7 @@ function ArticleEdit() {
     // AI生成文章
     const handleAIGenerate = () => {
         if (!title.trim()) {
-            alert('请先输入文章标题');
+            toast.warning('请先输入文章标题');
             return;
         }
         setShowGenerateDialog(true);
@@ -200,7 +203,7 @@ function ArticleEdit() {
     // AI续写
     const handleAIContinue = async () => {
         if (!content.trim()) {
-            alert('请先输入一些内容');
+            toast.warning('请先输入一些内容');
             return;
         }
 
@@ -221,7 +224,7 @@ function ArticleEdit() {
             }, null, null, ac.signal);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                alert('AI续写失败：' + (error.message || '未知错误'));
+                toast.error('AI续写失败：' + (error.message || '未知错误'));
             }
         } finally {
             setAILoading(false);
@@ -233,7 +236,7 @@ function ArticleEdit() {
     // AI润色
     const handleAIPolish = async () => {
         if (!content.trim()) {
-            alert('请先输入文章内容');
+            toast.warning('请先输入文章内容');
             return;
         }
 
@@ -265,7 +268,7 @@ function ArticleEdit() {
     // AI扩展大纲
     const handleAIExpand = async () => {
         if (!content.trim()) {
-            alert('请先输入大纲');
+            toast.warning('请先输入大纲');
             return;
         }
 
@@ -285,7 +288,7 @@ function ArticleEdit() {
             }, null, null, ac.signal);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                alert('AI扩展失败：' + (error.message || '未知错误'));
+                toast.error('AI扩展失败：' + (error.message || '未知错误'));
             }
         } finally {
             setAILoading(false);
@@ -314,7 +317,7 @@ function ArticleEdit() {
             }, null, null, ac.signal);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                alert('AI生成失败：' + (error.message || '未知错误'));
+                toast.error('AI生成失败：' + (error.message || '未知错误'));
             }
         } finally {
             setAILoading(false);
@@ -502,7 +505,7 @@ function ArticleEdit() {
                 )}
 
                 <AIFloatingMenu
-                    onGenerate={handleAIGenerate}
+                    onGenerate={() => setShowGenerateDialog(true)}
                     onContinue={handleAIContinue}
                     onPolish={handleAIPolish}
                     onExpand={handleAIExpand}
