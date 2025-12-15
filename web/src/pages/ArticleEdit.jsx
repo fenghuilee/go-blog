@@ -478,7 +478,7 @@ function ArticleEdit() {
                     <div className="form-group">
                         <label>内容 *</label>
 
-                        <ArticleEditor value={content} onChange={setContent} />
+                        <ArticleEditor value={content} onChange={setContent} autoScroll={aiLoading} />
                     </div>
 
 

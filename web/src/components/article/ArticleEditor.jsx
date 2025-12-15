@@ -3,31 +3,34 @@ import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 import './ArticleEditor.css';
 
-function ArticleEditor({ value, onChange }) {
-    const [editorKey, setEditorKey] = useState(0);
-    const lastExternalValue = useRef(value);
+function ArticleEditor({ value, onChange, autoScroll }) {
+    const cmRef = useRef(null);
 
-    // 检测外部value变化（非用户输入），强制刷新编辑器
-    useEffect(() => {
-        if (value !== lastExternalValue.current) {
-            // 只有当value变化较大时才强制刷新（比如AI生成的内容）
-            const lengthDiff = Math.abs((value?.length || 0) - (lastExternalValue.current?.length || 0));
-            if (lengthDiff > 50) {
-                setEditorKey(prev => prev + 1);
-            }
-            lastExternalValue.current = value;
+    const getInstance = useCallback((instance) => {
+        if (instance) {
+            cmRef.current = instance.codemirror;
         }
-    }, [value]);
+    }, []);
 
     const handleChange = useCallback((newValue) => {
-        lastExternalValue.current = newValue;
         onChange(newValue);
     }, [onChange]);
+
+    // 自动滚动到底部
+    useEffect(() => {
+        if (autoScroll && cmRef.current) {
+            const cm = cmRef.current;
+            // 滚动到底部
+            cm.scrollTo(null, cm.getScrollInfo().height);
+        }
+    }, [value, autoScroll]);
 
     const options = useMemo(() => {
         return {
             spellChecker: false,
             placeholder: '请输入文章内容（支持 Markdown）...',
+            // minHeight: '500px', // 通过CSS控制
+            maxHeight: '500px', // 设置最大高度，超过会出现滚动条
             toolbar: [
                 'bold',
                 'italic',
@@ -48,18 +51,19 @@ function ArticleEditor({ value, onChange }) {
                 'guide',
             ],
             autosave: {
-                enabled: false,  // 禁用自动保存避免冲突
+                enabled: false,
             },
+            status: false, // 隐藏底部状态栏，节省空间
         };
     }, []);
 
     return (
         <div className="markdown-editor-container">
             <SimpleMDE
-                key={editorKey}
                 value={value}
                 onChange={handleChange}
                 options={options}
+                getMdeInstance={getInstance}
             />
         </div>
     );
