@@ -5,7 +5,7 @@
 }
 
 .article-detail-page .container {
-    max-width: var(--max-width-narrow);
+    max-width: var(--max-width-medium);
 }
 
 .article-content {

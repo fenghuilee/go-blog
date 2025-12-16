@@ -52,9 +52,9 @@
     --font-weight-black: 900;
 
     /* 布局 */
-    --max-width-narrow: 650px;
-    --max-width-medium: 900px;
-    --max-width-wide: 1200px;
+    --max-width-narrow: 720px;
+    --max-width-medium: 1000px;
+    --max-width-wide: 1400px;
 
     /* 其他 */
     --border-radius: 0;
