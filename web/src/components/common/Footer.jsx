@@ -21,7 +21,7 @@ function Footer() {
                 © 2025 {siteName}. Powered by Go + React.
                 {icpBeian && (
                     <>
-                        {' | '}
+                        <br />
                         <a
                             href="https://beian.miit.gov.cn/"
                             target="_blank"
