@@ -15,10 +15,26 @@ function Footer() {
         );
     }
 
+    const getRootDomain = (hostname) => {
+        // 如果是 IP 地址，直接返回
+        if (/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(hostname)) {
+            return hostname;
+        }
+        const parts = hostname.split('.');
+        if (parts.length > 2) {
+            // 简单的 root domain 提取逻辑：取最后两段
+            // 注意：这不一定适用于所有后缀（如 .com.cn），但对于大多数常规域名是够用的
+            return parts.slice(-2).join('.');
+        }
+        return hostname;
+    };
+
+    const rootDomain = getRootDomain(window.location.hostname);
+
     return (
         <footer className="footer">
             <p>
-                © 2025 {siteName}. Powered by Go + React.
+                © 2012-{new Date().getFullYear()} {siteName}. Powered by Go + React.
                 {icpBeian && (
                     <>
                         <br />
@@ -31,6 +47,14 @@ function Footer() {
                         </a>
                     </>
                 )}
+                <br />
+                <a href={`https://hopedomain.com/zh/age/${rootDomain}`} target="_blank">
+                    <img src={`https://hopedomain.com/api/badge/domain-age/${rootDomain}?theme=purple&lang=zh`} alt="域名年龄" />
+                </a>
+                <br />
+                <a href={`https://zssl.com/zh/ssl-cert-verify?domain=${rootDomain}`} target="_blank">
+                    <img src={`https://zssl.com/api/badge/ssl-cert/${rootDomain}?style=full&lang=zh`} alt="SSL证书状态" />
+                </a>
             </p>
         </footer>
     );
